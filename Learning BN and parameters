@@ -1,0 +1,168 @@
+library(bnlearn)
+
+train_rose<-data.frame(train_rose)
+train_rose$HPVStatus<-as.factor(train_rose$HPVStatus)
+
+unlist(bn.boot(train_rose, statistic = ntests, R = 200, m = nrow(train_rose), algorithm = "hc",
+               algorithm.args = list(score = "loglik"), debug = TRUE))
+               
+arcs.hpv <- boot.strength(train_rose, algorithm = "hc", algorithm.args = list(score = "loglik"))
+a <- averaged.network(arcs.hpv)
+modelstring(averaged.network(arcs.hpv))
+
+
+# Convert the fitted BN to gRain object
+
+bn.hc<-hc(train_rose,score ="loglik")
+
+#netcv.hpv = bn.cv(train_rose,bn.hc, loss = "pred", k = 5,
+#  loss.args = list(target="HPVStatus"), debug = TRUE) #true.dag
+netcv.hpv = bn.cv(train_rose,true.dag, loss = "pred", k = 5,
+                  loss.args = list(target="HPVStatus"), debug = TRUE)
+#netcvfit.hpv = as.grain(netcv.hpv[[5]]$fitted)
+#hpv_test = train_rose[netcv.hpv[[5]]$test, ]
+#pred_test = predict(netcvfit.hpv, response = c("HPVStatus"), newdata = hpv_test,
+#                    predictors = names(hpv_test)[-1], type = "distribution")
+#pred_test=data.frame(pred_test)
+#pred_test$HPVStatus<-as.factor(pred_test$HPVStatus)
+
+#colAUC(pred_test[,2], hpv_test[ ,1], plotROC = TRUE)
+
+####
+
+netcvfit.hpv1 = as.grain(netcv.hpv[[1]]$fitted)
+netcvfit.hpv2 = as.grain(netcv.hpv[[2]]$fitted)
+netcvfit.hpv3 = as.grain(netcv.hpv[[3]]$fitted)
+netcvfit.hpv4 = as.grain(netcv.hpv[[4]]$fitted)
+netcvfit.hpv5 = as.grain(netcv.hpv[[5]]$fitted)
+#netcvfit.hpv6 = as.grain(netcv.hpv[[6]]$fitted)
+#netcvfit.hpv7 = as.grain(netcv.hpv[[7]]$fitted)
+#netcvfit.hpv8 = as.grain(netcv.hpv[[8]]$fitted)
+#netcvfit.hpv9 = as.grain(netcv.hpv[[9]]$fitted)
+#netcvfit.hpv10 = as.grain(netcv.hpv[[10]]$fitted)
+
+hpv_test1 = train_rose[netcv.hpv[[1]]$test, ]
+hpv_test2 = train_rose[netcv.hpv[[2]]$test, ]
+hpv_test3 = train_rose[netcv.hpv[[3]]$test, ]
+hpv_test4 = train_rose[netcv.hpv[[4]]$test, ]
+hpv_test5=hpv_test5[c(1:22,24:nrow(hpv_test5)), ]
+hpv_test5 = train_rose[netcv.hpv[[5]]$test, ]
+#hpv_test6 = train_rose[netcv.hpv[[6]]$test, ]
+#hpv_test7 = train_rose[netcv.hpv[[7]]$test, ]
+#hpv_test8 = train_rose[netcv.hpv[[8]]$test, ]
+#hpv_test9 = train_rose[netcv.hpv[[9]]$test, ]
+#hpv_test10 = train_rose[netcv.hpv[[10]]$test, ]
+
+pred_test1 = predict(netcvfit.hpv1, response = c("HPVStatus"), newdata = hpv_test1,
+                     predictors = names(hpv_test1)[-1], type = "distribution")
+pred_test2 = predict(netcvfit.hpv2, response = c("HPVStatus"), newdata = hpv_test2,
+                     predictors = names(hpv_test2)[-1], type = "distribution")
+pred_test3 = predict(netcvfit.hpv3, response = c("HPVStatus"), newdata = hpv_test3,
+                     predictors = names(hpv_test3)[-1], type = "distribution")
+pred_test4 = predict(netcvfit.hpv4, response = c("HPVStatus"), newdata = hpv_test4,
+                     predictors = names(hpv_test4)[-1], type = "distribution")
+pred_test5 = predict(netcvfit.hpv5, response = c("HPVStatus"), newdata = hpv_test5,
+                     predictors = names(hpv_test5)[-1], type = "distribution")
+#pred_test6 = predict(netcvfit.hpv6, response = c("HPVStatus"), newdata = hpv_test6,
+#                  predictors = names(hpv_test6)[-1], type = "distribution")
+#pred_test7 = predict(netcvfit.hpv7, response = c("HPVStatus"), newdata = hpv_test7,
+#                     predictors = names(hpv_test7)[-1], type = "distribution")
+
+#pred_test8 = predict(netcvfit.hpv8, response = c("HPVStatus"), newdata = hpv_test8,
+#        predictors = names(hpv_test8)[-1], type = "distribution")
+#pred_test9 = predict(netcvfit.hpv9, response = c("HPVStatus"), newdata = hpv_test9,
+#      predictors = names(hpv_test9)[-1], type = "distribution")
+#pred_test10 = predict(netcvfit.hpv10, response = c("HPVStatus"), newdata = hpv_test10,
+#    predictors = names(hpv_test10)[-1], type = "distribution")
+
+
+test_HPV_data=rbind(hpv_test1,hpv_test2,hpv_test3,hpv_test4,hpv_test5)
+pred_Test=data.frame(c(pred_test1$pred$HPVStatus[,2],pred_test2$pred$HPVStatus[,2],pred_test3$pred$HPVStatus[,2],
+                       pred_test4$pred$HPVStatus[,2],pred_test5$pred$HPVStatus[,2]))
+##pred_Test=data.frame(c(pred_test1$pEvidence,pred_test2$pEvidence,pred_test3$pEvidence,pred_test4$pEvidence,pred_test5$pEvidence)) #kaynakta $pred var fakat bence $pEvidence olmalı
+#pred_Test=data.frame(c(pred_test1$pred$HPVStatus[,2],pred_test2$pred$HPVStatus[,2],pred_test3$pred$HPVStatus[,2],
+#                       pred_test4$pred$HPVStatus[,2],pred_test5$pred$HPVStatus[,2],
+#                       pred_test6$pred$HPVStatus[,2],pred_test7$pred$HPVStatus[,2],
+#                       pred_test8$pred$HPVStatus[,2],pred_test9$pred$HPVStatus[,2],
+#                      pred_test10$pred$HPVStatus[,2]))
+colAUC(pred_Test, test_HPV_data[,1], plotROC = TRUE)
+
+#pred_Test=data.frame(c(pred_test1$pred$HPVStatus[,1],pred_test2$pred$HPVStatus[,1],pred_test3$pred$HPVStatus[,1],pred_test4$pred$HPVStatus[,1],pred_test5$pred$HPVStatus[,1]))
+#colAUC(pred_Test, test_HPV_data[,1], plotROC = TRUE)
+#####
+
+#test veri seti için(rose uygulanmadı) AUC 
+bnFitted<-bn.fit(true.dag,data =train_rose,method="bayes",iss=10) ##önemli soru? burada data olarak test data mı traın data mı kullanırız??
+bgrain<-as.grain(bnFitted)
+predict.bn.hpv <- predict(bgrain, response = c("HPVStatus"), 
+                          predictors=names(test_set)[-1], 
+                          newdata=test_set,
+                          type="distribution")
+pred.hpv<-prediction(data.frame(predict.bn.hpv[["pred"]])[,1],test_set$HPVStatus)#[,2]tüm satır 2. sutun
+roc<-performance(pred.hpv,"tpr","fpr")
+plot(roc,
+     col= "blue",
+     ylab="True positive rate (sensitivity)",
+     xlab="False positive rate (1-specificity)")
+abline(a=0,b=1, col= "grey")
+auc<-performance(pred.hpv,"auc")
+auc<-unlist(slot(auc,"y.values"))#dk18.30 geri don neden bak
+auc<-round(auc,4)
+legend(.6,.2,auc,title="AUC",cex=0.4)
+
+legend(.6,.2,legend=c(title="AUC 0.72"),
+       col=c("blue"), lty=1:2, cex=0.8)
+
+###graphing
+g<-graphviz.plot(true.dag, highlight = list(arcs = outgoing.arcs(true.dag, "ZSphericity"),
+                                            col = "blue", lwd = 3))
+gg=graphviz.plot(true.dag, shape = "ellipse", highlight = list(arcs = outgoing.arcs(true.dag, "ZMaximum2DDiameterRow"),
+                                                               col = "red", lwd = 3))
+#arc strength
+pvalues = arc.strength(true.dag, data = train_rose, criterion = "x2", debug = TRUE)
+strength.plot(true.dag,shape = "ellipse", strength = pvalues,
+              highlight = list(arcs = outgoing.arcs(true.dag, "ZMaximum2DDiameterRow"),
+                               nodes = c("ZMaximum2DDiameterRow","ZSphericity"),
+                               fill="light pink",col = "red"))
+#set evidence
+bnFitted<-bn.fit(true.dag,data =train_rose,method="bayes",iss=10)
+library(gRain)
+junction.hpv<-compile(as.grain(bnFitted))
+querygrain(junction.hpv,nodes = "ZSphericity")$ZSphericity
+
+
+querygrain(junction.hpv,nodes=c("ZMaximum2DDiameterRow","ZSphericity"),type="joint")
+querygrain(junction.hpv,nodes=c("ZMaximum2DDiameterRow","ZSphericity"),type="marginal")
+querygrain(junction.hpv,nodes=c("ZMaximum2DDiameterRow","ZSphericity"),type="conditional")
+jhpv<-setEvidence(junction.hpv,nodes = "HPVStatus",states = "P")
+querygrain(jhpv,nodes = "ZSphericity")$ZSphericity
+#ZSphericity
+# [-5.20483,-2.90299] (-2.90299,-0.601138]  (-0.601138,1.70071]    (1.70071,4.00256] 
+# 0.0187500            0.2020833            0.6687500            0.1104167
+
+jhpv<-setEvidence(junction.hpv,nodes = "HPVStatus",states = "N")
+querygrain(jhpv,nodes = "ZSphericity")$ZSphericity
+#ZSphericity
+# [-5.20483,-2.90299] (-2.90299,-0.601138]  (-0.601138,1.70071]    (1.70071,4.00256] 
+# 0.10892857           0.45178571           0.38035714           0.05892857
+
+#ZSphericity set evidence olarak ilk aralık [-5.20483,-2.90299],en küçük değer seçilince
+jhpv<-setEvidence(junction.hpv,nodes = "ZSphericity",states = "(0.846632,2.1868]")
+querygrain(jhpv,nodes = "HPVStatus")$HPVStatus
+#HPVStatus
+# N         P 
+# 0.8714286 0.1285714  
+#bu durumda HPVStatus %87 negatif 
+#Evidence can be entered in one of these forms:
+jhpv<-setEvidence(junction.hpv,nodes = c("ZSphericity","ZMaximum2DDiameterRow"),states = c("(0.846632,2.1868]","[-1.59779,-0.0728299]"))
+jhpv<-setEvidence(junction.hpv,nodes = "ZMaximum2DDiameterRow",states ="[-1.59779,-0.0728299]")
+
+#önemli
+pEvidence(jhpv) #The probability of observing this evidence under the model is
+
+#Evidence can be entered in one of these two equivalent forms:
+querygrain(jhpv,nodes = "HPVStatus")$HPVStatus
+
+#ZSphericity set evidence olarak son aralık (1.70071,4.00256],en büyük değer seçilince
+jhpv<-setEvidence(junction.hpv,nodes = "ZSphericity",states = "1")
+querygrain(jhpv,nodes = "HPVStatus")$HPVStatus
