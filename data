@@ -1,0 +1,36 @@
+#Contrast-enhanced Computed Tomography (CT) images (segmentation labeled) of OPC were obtained from The Cancer Imaging Archive (TCIA).
+#Radiomics features were extracted by using 3D Slicer software (version 4.11.2) with PyRadiomics extension. 
+
+install.packages(bnlearn)
+library(bnlearn)
+library(xlsx)
+library(caret)
+library(caTools) 
+
+data<-datafile
+data<-data.frame(data)
+data$HPVStatus<-as.factor(data$HPVStatus)
+summary(data$HPVStatus)
+
+#discretize continuous data into factors.
+data<-discretize(data=data,method="interval",breaks=4)
+
+#ROSE
+library(ROSE)
+rose<-ROSE(HPVStatus~.,data=training_set,N=250)$data
+table(rose$HPVStatus)
+train_rose=rose 
+
+#splitting the data set into the training and testing set
+split=sample.split(d1_M$HPVStatus, SplitRatio = 0.7)
+training_set=subset(d1_M,split==TRUE)
+test_set=subset(d1_M,split==FALSE)
+dim(test_set) 
+dim(training_set)
+
+#prob tables
+prop.table(table(data$HPVStatus))
+prop.table(table(training_set$HPVStatus))
+prop.table(table(test_set$HPVStatus))
+table(test_set$HPVStatus)
+table(training_set$HPVStatus)
