@@ -6,6 +6,7 @@ library(bnlearn)
 library(xlsx)
 library(caret)
 library(caTools) 
+library(ROSE)
 
 data<-datafile
 data<-data.frame(data)
@@ -16,7 +17,7 @@ summary(data$HPVStatus)
 data<-discretize(data=data,method="interval",breaks=4)
 
 #ROSE
-library(ROSE)
+
 rose<-ROSE(HPVStatus~.,data=training_set,N=250)$data
 table(rose$HPVStatus)
 train_rose=rose 
