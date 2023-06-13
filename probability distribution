@@ -1,0 +1,14 @@
+#set evidence
+bnFitted<-bn.fit(true.dag,data =train_rose,method="bayes",iss=10)
+library(gRain)
+junction.hpv<-compile(as.grain(bnFitted))
+querygrain(junction.hpv,nodes = "ZSphericity")$ZSphericity
+
+querygrain(junction.hpv,nodes=c("ZMaximum2DDiameterRow","ZSphericity"),type="joint")
+querygrain(junction.hpv,nodes=c("ZMaximum2DDiameterRow","ZSphericity"),type="marginal")
+querygrain(junction.hpv,nodes=c("ZMaximum2DDiameterRow","ZSphericity"),type="conditional")
+jhpv<-setEvidence(junction.hpv,nodes = "HPVStatus",states = "P")
+querygrain(jhpv,nodes = "ZSphericity")$ZSphericity
+
+jhpv<-setEvidence(junction.hpv,nodes = "HPVStatus",states = "N")
+querygrain(jhpv,nodes = "ZSphericity")$ZSphericity
