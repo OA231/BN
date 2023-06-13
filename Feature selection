@@ -1,0 +1,71 @@
+#MXM feature selection
+library(MXM)
+data1<-data
+data1<-data.frame(data1)
+data1$HPVStatus<-as.factor(data1$HPVStatus)
+M <-data1
+#Exclude target variable column
+targetVariable<-M$HPVStatus
+targetVariable<-NULL
+
+#1. convert dataframe to matrix
+HN_dataset<-as.matrix(M[,-1])
+head(HN_dataset,2)
+
+#3. select the target variable (HPVStatus) and store as a matrix
+target_hpv<-as.vector(M$HPVStatus) 
+target_hpv<-as.factor(target_hpv)
+str(target_hpv,2)
+
+#mmpc on the dataset
+library('MXM')
+mmpobject_M_Hpv<-MXM::MMPC(target = target_hpv,
+                           dataset = HN_dataset,
+                           max_k = 3,
+                           threshold = 0.05,
+                           test = 'testIndLogistic',
+                           ini = NULL,
+                           hash = TRUE,
+                           hashObject = NULL,
+                           ncores = 1,
+                           backward = TRUE)
+#cache of the stats calculated in the mmpc run
+str(mmpobject_M_Hpv@hashObject)
+#a list of univariate associations
+str(mmpobject_M_Hpv@univ)
+#save the run time of the first MMPC run in a varible
+#to compare later
+execution_time_1st_MMPC_run<- mmpobject_M_Hpv@runtime
+execution_time_1st_MMPC_run
+
+#MMPC on the data set
+mmpobject_2nd_run<-MXM::MMPC(target = target_hpv,
+                            dataset = HN_dataset,
+                            max_k = 5,
+                            threshold = 0.01,
+                            test = 'testIndLogistic',
+                            ini = mmpobject_M_Hpv@univ,
+                            hashObject = mmpobject_M_Hpv@hashObject)
+execution_time_2nd_MMPC_run<-mmpobject_2nd_run@runtime
+execution_time_2nd_MMPC_run
+
+#Grid search for MMPC hyper-parameter tuning
+library('MXM')
+mmpcGridSearch<-MXM::mmpc.path(target = target_hpv,
+                               dataset = HN_dataset,
+                               max_ks = c(3,4,5,6),
+                               alphas = NULL, 
+                               test = 'testIndLogistic',
+                               ncores = 1)
+BIC_results<-as.data.frame(mmpcGridSearch$bic)
+head(BIC_results,4)
+
+which(BIC_results==min(BIC_results),arr.ind = TRUE)
+size_of_signature_results<-as.data.frame(mmpcGridSearch$size)
+head(size_of_signature_results)
+which(size_of_signature_results==max(size_of_signature_results),arr.ind = TRUE)
+head(mmpcGridSearch$variables,4)
+summary(mmpobject_M_Hpv)
+mmpobject_M_Hpv@selectedVarsOrder
+mmpobject_2nd_run@selectedVarsOrder
+mmpcGridSearch@selectedVarsOrder
