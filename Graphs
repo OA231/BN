@@ -1,0 +1,11 @@
+#graphing
+g<-graphviz.plot(true.dag, highlight = list(arcs = outgoing.arcs(true.dag, "Sphericity"),
+                                            col = "blue", lwd = 3))
+gg=graphviz.plot(true.dag, shape = "ellipse", highlight = list(arcs = outgoing.arcs(true.dag, "Maximum2DDiameterRow"),
+                                                               col = "red", lwd = 3))
+#arc strength
+pvalues = arc.strength(true.dag, data = train_rose, criterion = "x2", debug = TRUE)
+strength.plot(true.dag,shape = "ellipse", strength = pvalues,
+              highlight = list(arcs = outgoing.arcs(true.dag, "Maximum2DDiameterRow"),
+                               nodes = c("Maximum2DDiameterRow","Sphericity"),
+                               fill="light pink",col = "red"))
