@@ -33,8 +33,6 @@ mmpobject_M_Hpv<-MXM::MMPC(target = target_hpv,
 str(mmpobject_M_Hpv@hashObject)
 #a list of univariate associations
 str(mmpobject_M_Hpv@univ)
-#save the run time of the first MMPC run in a varible
-#to compare later
 execution_time_1st_MMPC_run<- mmpobject_M_Hpv@runtime
 execution_time_1st_MMPC_run
 
