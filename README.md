@@ -1,7 +1,7 @@
 Interpretable Radiomics Method for Predicting Human Papillomavirus Status in Oropharyngeal Cancer using Bayesian Networks
 
 Dataset
-Contrast-enhanced Computed Tomography (CT) images (segmentation labeled) of OPC were obtained from The Cancer Imaging Archive (TCIA) [1]. The datasets can be downloaded from their official sites.
+Contrast-enhanced Computed Tomography (CT) images (segmentation labeled) of Oropharyngeal cancer were obtained from The Cancer Imaging Archive (TCIA) [1]. The datasets can be downloaded from their official sites.
 
 
 References
